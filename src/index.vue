@@ -44,19 +44,23 @@ export default {
       ]
     };
   },
+  mounted() {
+    var hammer = new Hammer(document.getElementById("container"));
+    
+  },
   methods: {
     fileChange(event) {
       let self = this;
       let reader = new FileReader();
       let img = event.target.files[0];
-      console.log(img);
+      // console.log(img);
       reader.readAsDataURL(img);
       reader.onloadend = function() {
         self.imgUrl = reader.result;
       };
     },
     drawCanvas() {
-      console.log(html2canvas);
+      // console.log(html2canvas);
       html2canvas(document.querySelector(".img-border")).then(canvas => {
         document.body.appendChild(canvas);
       });
@@ -103,7 +107,7 @@ body {
           border: 1px dashed #000;
           width: 100px;
           height: 100px;
-          .del{
+          .del {
             position: absolute;
             bottom: -8px;
             right: -8px;
