@@ -3,6 +3,8 @@
 import Vue from 'vue'
 import App from './index'
 import router from './router'
+import html2canvas from 'html2canvas'
+// Vue.use(html2canvas);
 
 Vue.config.productionTip = false
 
