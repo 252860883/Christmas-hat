@@ -1,22 +1,24 @@
 <template>
   <div id="app">
     <div class="img-top">
-      <div class="img-border">
-        <img class="img" :src="imgUrl"/>     
-        <div class="hat-con">
-          <div class="hat-border">
-            <div class="del">||</div>
-          </div>
-          <img class="imghat" :src="require('./assets/hat1.png')" />          
-        </div>
 
+      <div class="img-border">
+        <img class="img" :src="imgUrl"/>   
+        <!-- 素材区 -->
+        <div class="hat-con" >
+          <div class="hat-border">
+            <div class="del" @touchmove="moveBar($event)">||</div>
+          </div>
+          <img class="imghat" :src="require('./assets/hat1.png')" @touchstart="moveStart($event)" @touchmove="moveHat($event)" @touchend="moveEnd()"/>          
+        </div>
       </div>
+
       <div class="button-group">
+        <!-- accept属性限制上传文件类型 -->
         <input class="upload" type="file" @change="fileChange" accept="image/jpeg,image/png,image/gif">
         <a @click="drawCanvas">保存</a>
       </div>
-      <!-- accept属性限制上传文件类型 -->
-
+      
     </div>
     <div class="hat-box">
     <div class="hat-select">
@@ -41,12 +43,20 @@ export default {
         require("./assets/hat1.png"),
         require("./assets/hat1.png"),
         require("./assets/hat1.png")
-      ]
+      ],
+      sPosition: {
+        x: 0,
+        y: 0
+      },
+      dX: 0,
+      dY: 0,
+      moveX: 0,
+      moveY: 0,
+      scale: 1 //放大的尺寸
     };
   },
   mounted() {
-    var hammer = new Hammer(document.getElementById("container"));
-    
+    // var hammer = new Hammer(document.getElementById("container"));
   },
   methods: {
     fileChange(event) {
@@ -64,6 +74,36 @@ export default {
       html2canvas(document.querySelector(".img-border")).then(canvas => {
         document.body.appendChild(canvas);
       });
+    },
+    moveStart(e) {
+      this.sPosition = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY
+      };
+    },
+    moveHat(e) {
+      let moveDom = document.querySelector(".hat-con");
+      this.moveX = e.touches[0].clientX - this.sPosition.x;
+      this.moveY = e.touches[0].clientY - this.sPosition.y;
+      moveDom.style.transform = `translateX(${this.dX +
+        this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${this.scale})`;
+      moveDom.style.webkitTransform = `translateX(${this.dX +
+        this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${this.scale})`;
+    },
+    moveEnd() {
+      this.dX += this.moveX;
+      this.dY += this.moveY;
+    },
+    moveBar(e) {
+      let moveDom = document.querySelector(".hat-con");
+      console.log(moveDom.getBoundingClientRect().x,moveDom.getBoundingClientRect().width)
+      this.scale =
+        (e.touches[0].clientX - moveDom.getBoundingClientRect().x) /
+        moveDom.getBoundingClientRect().width;
+      moveDom.style.transform = `translateX(${this.dX}px) translateY(${this
+        .dY}px) scale(${this.scale})`;
+      moveDom.style.webkitTransform = `translateX(${this
+        .dX}px) translateY(${this.dY}px) scale(${this.scale})`;
     }
   }
 };
@@ -101,6 +141,8 @@ body {
         z-index: 10;
         top: 50%;
         left: 50%;
+        width: 100px;
+        height: 100px;
         margin: -50px 0 0 -50px;
         .hat-border {
           position: absolute;
