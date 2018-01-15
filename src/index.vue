@@ -1,16 +1,20 @@
 <template>
   <div id="app">
+    <div class="title">
+      <!-- <p>MERRY CHRISMAS</p> -->
+      <img src="./assets/title.png" alt="">
+    </div>
     <div class="img-top">
-
       <div class="img-border">
-        <img class="img" :src="imgUrl"/>   
+        <img class="img" :src="imgUrl" @click="showBorder=false"/>   
         <!-- 素材区 -->
-        <div class="hat-con" >
-          <div class="hat-border">
+        <div class="hat-con" v-show="showHat" @touchstart="showBorder=true">
+          <div class="hat-border" v-show="showBorder">
             <div class="del" @touchmove="moveBar($event)">||</div>
           </div>
-          <img class="imghat" :src="require('./assets/hat1.png')" @touchstart="moveStart($event)" @touchmove="moveHat($event)" @touchend="moveEnd()"/>          
+          <img class="imghat"  :src="hatUrl" @touchstart="moveStart($event)" @touchmove="moveHat($event)" @touchend="moveEnd()"/>          
         </div>
+        
       </div>
 
       <div class="button-group">
@@ -22,7 +26,7 @@
     </div>
     <div class="hat-box">
     <div class="hat-select">
-      <div class="hat-border" v-for="hat in hatLists"> 
+      <div class="hat-border" v-for="hat in hatLists" @click="selectHat(hat)"> 
         <img :src="hat">
       </div>
     </div>
@@ -39,10 +43,10 @@ export default {
       imgUrl: "",
       hatLists: [
         require("./assets/hat1.png"),
-        require("./assets/hat1.png"),
-        require("./assets/hat1.png"),
-        require("./assets/hat1.png"),
-        require("./assets/hat1.png")
+        require("./assets/hat2.png"),
+        require("./assets/hat3.png"),
+        require("./assets/hat4.png"),
+        require("./assets/hat5.png")
       ],
       sPosition: {
         x: 0,
@@ -52,7 +56,10 @@ export default {
       dY: 0,
       moveX: 0,
       moveY: 0,
-      scale: 1 //放大的尺寸
+      scale: 1, //放大的尺寸
+      showHat: false,
+      showBorder: false,
+      hatUrl: ""
     };
   },
   mounted() {
@@ -86,9 +93,11 @@ export default {
       this.moveX = e.touches[0].clientX - this.sPosition.x;
       this.moveY = e.touches[0].clientY - this.sPosition.y;
       moveDom.style.transform = `translateX(${this.dX +
-        this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${this.scale})`;
+        this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${this
+        .scale})`;
       moveDom.style.webkitTransform = `translateX(${this.dX +
-        this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${this.scale})`;
+        this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${this
+        .scale})`;
     },
     moveEnd() {
       this.dX += this.moveX;
@@ -96,23 +105,50 @@ export default {
     },
     moveBar(e) {
       let moveDom = document.querySelector(".hat-con");
-      console.log(moveDom.getBoundingClientRect().x,moveDom.getBoundingClientRect().width)
+      let delDom = document.querySelector(".del");
       this.scale =
-        (e.touches[0].clientX - moveDom.getBoundingClientRect().x) /
-        moveDom.getBoundingClientRect().width;
+        (e.touches[0].clientX - moveDom.getBoundingClientRect().x) / 100;
+      if (this.scale < 0.5) {
+        this.scale = 0.5;
+      }
+      if (this.scale > 2) {
+        this.scale = 2;
+      }
+
       moveDom.style.transform = `translateX(${this.dX}px) translateY(${this
         .dY}px) scale(${this.scale})`;
       moveDom.style.webkitTransform = `translateX(${this
         .dX}px) translateY(${this.dY}px) scale(${this.scale})`;
+
+      // delDom.style.width = '10px';
+    },
+    // 还原样式
+    clearHat() {
+      let moveDom = document.querySelector(".hat-con");
+      moveDom.style.webkitTransform = "";
+      moveDom.style.transform = "";
+      this.dX = 0;
+      this.dY = 0;
+      this.moveX = 0;
+      this.moveY = 0;
+      this.scale = 1;
+    },
+    selectHat(hat) {
+      this.showHat = true;
+      this.showBorder = true;
+      this.hatUrl = hat;
+      this.clearHat();
     }
   }
 };
 </script>
 
 <style lang="scss">
+$red: "#CD0000";
 body {
   margin: 0;
   padding: 0;
+  background: $red;
 }
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
@@ -120,8 +156,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   margin: 0;
-  margin-top: 60px;
+  margin-top: 30px;
   padding: 0;
+  .title {
+    img {
+      width: 100%;
+    }
+  }
   .img-top {
     width: 300px;
     margin: 0 auto;
@@ -159,6 +200,7 @@ body {
             color: #fff;
             border-radius: 50%;
             text-align: center;
+            transform: scale(1) !important;
           }
         }
         .imghat {
@@ -188,7 +230,7 @@ body {
           height: 40px;
           display: block;
           cursor: pointer;
-          background: #000;
+          background: green;
           color: #fff;
           text-align: center;
           line-height: 40px;
@@ -200,7 +242,7 @@ body {
         width: 100px;
         height: 40px;
         float: right;
-        background: #000;
+        background: green;
         color: #fff;
         text-align: center;
         border-radius: 5px;
@@ -213,11 +255,13 @@ body {
     height: 150px;
     overflow: hidden;
     border-bottom: 1px solid #000;
+
     .hat-select {
       margin-top: 30px;
       width: auto;
       height: 140px;
       border-top: 1px solid #000;
+      background: #cd0000;
       overflow-x: scroll;
       overflow-y: hidden;
       .hat-border {
@@ -229,7 +273,8 @@ body {
           margin: 10px;
           padding: 5px;
           box-sizing: border-box;
-          border: 1px solid #000;
+          border: 2px solid #fff;
+          background: green;
           width: 100px;
           height: 100px;
         }
