@@ -1,9 +1,12 @@
 <template>
   <div id="app">
+
     <div class="title">
       <!-- <p>MERRY CHRISMAS</p> -->
       <img src="./assets/title.png" alt="">
     </div>
+
+    <!-- 照片区 -->
     <div class="img-top">
       <div class="img-border">
         <img class="img" :src="imgUrl" @click="showBorder=false"/>   
@@ -14,23 +17,29 @@
           </div>
           <img class="imghat"  :src="hatUrl" @touchstart="moveStart($event)" @touchmove="moveHat($event)" @touchend="moveEnd()"/>          
         </div>
-        
       </div>
-
       <div class="button-group">
         <!-- accept属性限制上传文件类型 -->
         <input class="upload" type="file" @change="fileChange" accept="image/jpeg,image/png,image/gif">
         <a @click="drawCanvas">保存</a>
       </div>
-      
     </div>
+
+    <!-- 选择帽子 -->
     <div class="hat-box">
-    <div class="hat-select">
-      <div class="hat-border" v-for="hat in hatLists" @click="selectHat(hat)"> 
-        <img :src="hat">
+      <div class="hat-select">
+        <div class="hat-border" v-for="hat in hatLists" @click="selectHat(hat)"> 
+          <img :src="hat">
+        </div>
       </div>
     </div>
+
+    <!-- 生成图片 -->
+    <div class="download" v-show="isProduce" @click="isProduce=false">
+      <img :src="downLoadImgUrl" alt="">
+      <p>长按图片保存</p>
     </div>
+
   </div>
 </template>
 
@@ -59,27 +68,32 @@ export default {
       scale: 1, //放大的尺寸
       showHat: false,
       showBorder: false,
-      hatUrl: ""
+      hatUrl: "",
+      downLoadImgUrl: "",
+      isProduce: false
     };
   },
   mounted() {
     // var hammer = new Hammer(document.getElementById("container"));
   },
   methods: {
+    // 上传图片显示
     fileChange(event) {
       let self = this;
       let reader = new FileReader();
       let img = event.target.files[0];
-      // console.log(img);
       reader.readAsDataURL(img);
       reader.onloadend = function() {
         self.imgUrl = reader.result;
       };
     },
+    // 保存图片生成canvas
     drawCanvas() {
-      // console.log(html2canvas);
       html2canvas(document.querySelector(".img-border")).then(canvas => {
-        document.body.appendChild(canvas);
+        // document.body.appendChild(canvas);
+        this.downLoadImgUrl = canvas.toDataURL("image/jpeg");
+        console.log(this.downLoadImgUrl);
+        this.isProduce = true;
       });
     },
     moveStart(e) {
@@ -145,10 +159,12 @@ export default {
 
 <style lang="scss">
 $red: "#CD0000";
-body {
+body,
+html {
   margin: 0;
   padding: 0;
-  background: $red;
+  height: 100%;
+  overflow: hidden;
 }
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
@@ -158,6 +174,7 @@ body {
   margin: 0;
   margin-top: 30px;
   padding: 0;
+  height: 100%;
   .title {
     img {
       width: 100%;
@@ -279,6 +296,27 @@ body {
           height: 100px;
         }
       }
+    }
+  }
+  .download {
+    height: 100%;
+    width: 100%;
+    background: rgba(1, 1, 1, 0.7);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 12;
+    text-align: center;
+    img {
+      width: 300px;
+      height: 300px;
+      border: 2px solid #fff;
+      margin-top: 50px;
+    }
+    p {
+      width: 6em;
+      margin: 50px auto;
+      color: #fff;
     }
   }
 }
