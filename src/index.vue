@@ -76,7 +76,10 @@ export default {
       showBorder: false,
       hatUrl: "",
       downLoadImgUrl: "",
-      isProduce: false
+      isProduce: false,
+      centerX: 0,
+      centerY: 0,
+      rotate: 0
     };
   },
   mounted() {
@@ -95,7 +98,7 @@ export default {
     },
     // 保存图片生成canvas
     drawCanvas() {
-      let self=this;
+      let self = this;
       this.showBorder = false;
       setTimeout(function() {
         html2canvas(document.querySelector(".made-img")).then(canvas => {
@@ -114,22 +117,39 @@ export default {
       let moveDom = document.querySelector(".hat-con");
       this.moveX = e.touches[0].clientX - this.sPosition.x;
       this.moveY = e.touches[0].clientY - this.sPosition.y;
+
       moveDom.style.transform = `translateX(${this.dX +
         this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${this
-        .scale})`;
+        .scale}) rotate(${this.rotate}deg)`;
       moveDom.style.webkitTransform = `translateX(${this.dX +
         this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${this
-        .scale})`;
+        .scale}) rotate(${this.rotate}deg)`;
     },
     moveEnd() {
       this.dX += this.moveX;
       this.dY += this.moveY;
+      this.centerX += this.moveX;
+      this.centerY += this.moveY;
     },
     moveBar(e) {
       let moveDom = document.querySelector(".hat-con");
       let delDom = document.querySelector(".del");
+
+      let rX = e.touches[0].clientX - this.centerX;
+      let rY = e.touches[0].clientY - this.centerY;
+      if (rX >= 0) {
+        this.rotate = (Math.atan(rY / rX) - Math.PI * 0.25) / Math.PI * 180;
+      } else {
+        this.rotate = (Math.atan(rY / rX) + Math.PI * 0.75) / Math.PI * 180;
+      }
+
       this.scale =
-        (e.touches[0].clientX - moveDom.getBoundingClientRect().x) / 100;
+        Math.sqrt(
+          Math.pow(e.touches[0].clientX - this.centerX, 2) +
+            Math.pow(e.touches[0].clientY - this.centerY, 2)
+        ) /
+        (Math.sqrt(2) * 50);
+      console.log(this.scale);
       if (this.scale < 0.5) {
         this.scale = 0.5;
       }
@@ -138,11 +158,11 @@ export default {
       }
 
       moveDom.style.transform = `translateX(${this.dX}px) translateY(${this
-        .dY}px) scale(${this.scale})`;
+        .dY}px) scale(${this.scale}) rotate(${this.rotate}deg)`;
       moveDom.style.webkitTransform = `translateX(${this
-        .dX}px) translateY(${this.dY}px) scale(${this.scale})`;
-
-      // delDom.style.width = '10px';
+        .dX}px) translateY(${this.dY}px) scale(${this.scale}) rotate(${this
+        .rotate}deg)`;
+      // moveDom.style.transform = `rotate(${this.rotate}deg)`;
     },
     // 还原样式
     clearHat() {
@@ -160,6 +180,26 @@ export default {
       this.showBorder = true;
       this.hatUrl = hat;
       this.clearHat();
+      let self = this;
+      let moveDom = document.querySelector(".hat-con");
+      let delDom = document.querySelector(".del");
+      setTimeout(function() {
+        self.centerY =
+          (delDom.getBoundingClientRect().y +
+            moveDom.getBoundingClientRect().y +
+            10) /
+          2;
+        self.centerX =
+          (delDom.getBoundingClientRect().x +
+            moveDom.getBoundingClientRect().x +
+            10) /
+          2;
+        console.log(
+          delDom.getBoundingClientRect(),
+          moveDom.getBoundingClientRect()
+        );
+        console.log(this.centerX, this.centerY);
+      }, 0);
     }
   }
 };
