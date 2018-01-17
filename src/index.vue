@@ -3,7 +3,7 @@
 
     <div class="title">
       <!-- <p>MERRY CHRISMAS</p> -->
-      <img src="./assets/title.png" alt="">
+      <img src="./assets/bg.png" alt="">
     </div>
 
     <!-- 照片区 -->
@@ -174,6 +174,7 @@ export default {
       this.moveX = 0;
       this.moveY = 0;
       this.scale = 1;
+      this.rotate=0;
     },
     selectHat(hat) {
       this.showHat = true;
@@ -206,7 +207,7 @@ export default {
 </script>
 
 <style lang="scss">
-$red: "#CD0000";
+$red: #CD0000;
 body,
 html {
   margin: 0;
@@ -225,7 +226,11 @@ html {
   height: 100%;
   .title {
     img {
+      position: fixed;
+      margin-top: -30px;
+      z-index: -1;
       width: 100%;
+      height: 100%;
     }
   }
   .img-top {
@@ -235,7 +240,9 @@ html {
       display: block;
       width: 300px;
       height: 300px;
-      border: 1px solid #000;
+      border: 3px solid #ddd;
+      border-radius: 5px;
+      box-sizing: border-box;
       overflow: hidden;
       position: relative;
       .img {
@@ -296,7 +303,7 @@ html {
           height: 40px;
           display: block;
           cursor: pointer;
-          background: green;
+          background: #586f80;
           color: #fff;
           text-align: center;
           line-height: 40px;
@@ -308,7 +315,7 @@ html {
         width: 100px;
         height: 40px;
         float: right;
-        background: green;
+        background: #586f80;
         color: #fff;
         text-align: center;
         border-radius: 5px;
@@ -320,14 +327,14 @@ html {
     width: 100%;
     height: 150px;
     overflow: hidden;
-    border-bottom: 1px solid #000;
+    // border-bottom: 1px solid #586f80;
 
     .hat-select {
       margin-top: 30px;
       width: auto;
       height: 140px;
-      border-top: 1px solid #000;
-      background: #cd0000;
+      // border-top: 2px solid #000;
+      // background: #fff;
       overflow-x: scroll;
       overflow-y: hidden;
       .hat-border {
@@ -340,7 +347,7 @@ html {
           padding: 5px;
           box-sizing: border-box;
           border: 2px solid #fff;
-          background: green;
+          background: #d8e1f1;
           width: 100px;
           height: 100px;
         }
@@ -360,7 +367,7 @@ html {
       width: 300px;
       height: 300px;
       border: 2px solid #fff;
-      margin-top: 100px;
+      margin-top: 30px;
     }
     p {
       width: 6em;
