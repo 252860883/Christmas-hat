@@ -8,16 +8,22 @@
 
     <!-- 照片区 -->
     <div class="img-top">
+      
       <div class="img-border">
-        <img class="img" :src="imgUrl" @click="showBorder=false"/>   
-        <!-- 素材区 -->
-        <div class="hat-con" v-show="showHat" @touchstart="showBorder=true">
-          <div class="hat-border" v-show="showBorder">
-            <div class="del" @touchmove="moveBar($event)">||</div>
+
+        <div class="made-img">
+          <!-- 大图 -->
+          <img class="img" :src="imgUrl" @click="showBorder=false"/>   
+          <!-- 素材区 -->
+          <div class="hat-con" v-show="showHat" @touchstart="showBorder=true">
+            <div class="hat-border" v-show="showBorder">
+              <div class="del" @touchmove="moveBar($event)">||</div>
+            </div>
+            <img class="imghat"  :src="hatUrl" @touchstart="moveStart($event)" @touchmove="moveHat($event)" @touchend="moveEnd()"/>          
           </div>
-          <img class="imghat"  :src="hatUrl" @touchstart="moveStart($event)" @touchmove="moveHat($event)" @touchend="moveEnd()"/>          
         </div>
       </div>
+
       <div class="button-group">
         <!-- accept属性限制上传文件类型 -->
         <input class="upload" type="file" @change="fileChange" accept="image/jpeg,image/png,image/gif">
@@ -89,12 +95,14 @@ export default {
     },
     // 保存图片生成canvas
     drawCanvas() {
-      html2canvas(document.querySelector(".img-border")).then(canvas => {
-        // document.body.appendChild(canvas);
-        this.downLoadImgUrl = canvas.toDataURL("image/jpeg");
-        console.log(this.downLoadImgUrl);
-        this.isProduce = true;
-      });
+      let self=this;
+      this.showBorder = false;
+      setTimeout(function() {
+        html2canvas(document.querySelector(".made-img")).then(canvas => {
+          self.downLoadImgUrl = canvas.toDataURL("image/jpeg");
+          self.isProduce = true;
+        });
+      }, 0);
     },
     moveStart(e) {
       this.sPosition = {
@@ -193,6 +201,7 @@ html {
       .img {
         max-width: 300px;
         min-height: 300px;
+        overflow: hidden;
       }
       .hat-con {
         position: absolute;
@@ -311,7 +320,7 @@ html {
       width: 300px;
       height: 300px;
       border: 2px solid #fff;
-      margin-top: 50px;
+      margin-top: 100px;
     }
     p {
       width: 6em;
