@@ -10,14 +10,15 @@
     <div class="img-top">
       
       <div class="img-border">
-
         <div class="made-img">
           <!-- 大图 -->
           <img class="img" :src="imgUrl" @click="showBorder=false"/>   
           <!-- 素材区 -->
           <div class="hat-con" v-show="showHat" @touchstart="showBorder=true">
             <div class="hat-border" v-show="showBorder">
-              <div class="del" @touchmove="moveBar($event)">||</div>
+              <div class="del" @touchmove="moveBar($event)">
+                <p class="bar">||</p>
+              </div>
             </div>
             <img class="imghat"  :src="hatUrl" @touchstart="moveStart($event)" @touchmove="moveHat($event)" @touchend="moveEnd()"/>          
           </div>
@@ -26,7 +27,7 @@
 
       <div class="button-group">
         <!-- accept属性限制上传文件类型 -->
-        <input class="upload" type="file" @change="fileChange" accept="image/jpeg,image/png,image/gif">
+        <input class="upload" type="file" @change="fileChange" accept="image/jpeg,image/png,image/jpg">
         <a @click="drawCanvas">保存</a>
       </div>
     </div>
@@ -79,26 +80,30 @@ export default {
       isProduce: false,
       centerX: 0,
       centerY: 0,
-      rotate: 0
+      rotate: 0,
+      isPicture: false
     };
-  },
-  mounted() {
-    // var hammer = new Hammer(document.getElementById("container"));
   },
   methods: {
     // 上传图片显示
     fileChange(event) {
+      event.preventDefault();
+      this.isPicture = false;
       let self = this;
       let reader = new FileReader();
       let img = event.target.files[0];
       reader.readAsDataURL(img);
       reader.onloadend = function() {
         self.imgUrl = reader.result;
+        self.isPicture = true;
       };
     },
     // 保存图片生成canvas
     drawCanvas() {
       let self = this;
+      if (!self.isPicture) {
+        return;
+      }
       this.showBorder = false;
       setTimeout(function() {
         html2canvas(document.querySelector(".made-img")).then(canvas => {
@@ -108,22 +113,26 @@ export default {
       }, 0);
     },
     moveStart(e) {
+      e.preventDefault();
       this.sPosition = {
         x: e.touches[0].clientX,
         y: e.touches[0].clientY
       };
     },
     moveHat(e) {
+      e.preventDefault();
       let moveDom = document.querySelector(".hat-con");
       this.moveX = e.touches[0].clientX - this.sPosition.x;
       this.moveY = e.touches[0].clientY - this.sPosition.y;
 
       moveDom.style.transform = `translateX(${this.dX +
-        this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${this
-        .scale}) rotate(${this.rotate}deg)`;
+        this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${
+        this.scale
+      }) rotate(${this.rotate}deg)`;
       moveDom.style.webkitTransform = `translateX(${this.dX +
-        this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${this
-        .scale}) rotate(${this.rotate}deg)`;
+        this.moveX}px) translateY(${this.dY + this.moveY}px) scale(${
+        this.scale
+      }) rotate(${this.rotate}deg)`;
     },
     moveEnd() {
       this.dX += this.moveX;
@@ -149,7 +158,7 @@ export default {
             Math.pow(e.touches[0].clientY - this.centerY, 2)
         ) /
         (Math.sqrt(2) * 50);
-      console.log(this.scale);
+
       if (this.scale < 0.5) {
         this.scale = 0.5;
       }
@@ -157,11 +166,12 @@ export default {
         this.scale = 2;
       }
 
-      moveDom.style.transform = `translateX(${this.dX}px) translateY(${this
-        .dY}px) scale(${this.scale}) rotate(${this.rotate}deg)`;
-      moveDom.style.webkitTransform = `translateX(${this
-        .dX}px) translateY(${this.dY}px) scale(${this.scale}) rotate(${this
-        .rotate}deg)`;
+      moveDom.style.transform = `translateX(${this.dX}px) translateY(${
+        this.dY
+      }px) scale(${this.scale}) rotate(${this.rotate}deg)`;
+      moveDom.style.webkitTransform = `translateX(${this.dX}px) translateY(${
+        this.dY
+      }px) scale(${this.scale}) rotate(${this.rotate}deg)`;
       // moveDom.style.transform = `rotate(${this.rotate}deg)`;
     },
     // 还原样式
@@ -174,9 +184,12 @@ export default {
       this.moveX = 0;
       this.moveY = 0;
       this.scale = 1;
-      this.rotate=0;
+      this.rotate = 0;
     },
     selectHat(hat) {
+      if (!this.isPicture) {
+        return;
+      }
       this.showHat = true;
       this.showBorder = true;
       this.hatUrl = hat;
@@ -186,20 +199,16 @@ export default {
       let delDom = document.querySelector(".del");
       setTimeout(function() {
         self.centerY =
-          (delDom.getBoundingClientRect().y +
-            moveDom.getBoundingClientRect().y +
+          (delDom.getBoundingClientRect().top +
+            moveDom.getBoundingClientRect().top +
             10) /
           2;
         self.centerX =
-          (delDom.getBoundingClientRect().x +
-            moveDom.getBoundingClientRect().x +
+          (delDom.getBoundingClientRect().left +
+            moveDom.getBoundingClientRect().left +
             10) /
           2;
-        console.log(
-          delDom.getBoundingClientRect(),
-          moveDom.getBoundingClientRect()
-        );
-        console.log(this.centerX, this.centerY);
+        // alert(delDom.getBoundingClientRect().x);
       }, 0);
     }
   }
@@ -207,7 +216,7 @@ export default {
 </script>
 
 <style lang="scss">
-$red: #CD0000;
+$red: #cd0000;
 body,
 html {
   margin: 0;
@@ -230,7 +239,7 @@ html {
       margin-top: -30px;
       z-index: -1;
       width: 100%;
-      height: 100%;
+      // height: 100%;
     }
   }
   .img-top {
@@ -241,6 +250,7 @@ html {
       width: 300px;
       height: 300px;
       border: 3px solid #ddd;
+      background: #fff;
       border-radius: 5px;
       box-sizing: border-box;
       overflow: hidden;
@@ -265,15 +275,25 @@ html {
           height: 100px;
           .del {
             position: absolute;
-            bottom: -8px;
-            right: -8px;
-            width: 20px;
-            height: 20px;
-            background: #000;
-            color: #fff;
-            border-radius: 50%;
-            text-align: center;
+            z-index: 5;
+            bottom: -25px;
+            right: -25px;
+            width: 50px;
+            height: 50px;
+            // background: #ddd;
             transform: scale(1) !important;
+            .bar {
+              background: #000;
+              border-radius: 50%;
+              width: 20px;
+              height: 20px;
+              line-height: 20px;
+              margin: 0 auto;
+              margin-top: 15px;
+              color: #fff;
+              text-align: center;
+              font-size: 12px;
+            }
           }
         }
         .imghat {
@@ -293,7 +313,7 @@ html {
       .upload {
         position: relative;
         width: 180px;
-        margin-right: 20px;
+        margin-right: 15px;
         &::after {
           content: "上传图片";
           position: absolute;
@@ -304,6 +324,7 @@ html {
           display: block;
           cursor: pointer;
           background: #586f80;
+          border: 2px solid #fff;
           color: #fff;
           text-align: center;
           line-height: 40px;
@@ -316,6 +337,7 @@ html {
         height: 40px;
         float: right;
         background: #586f80;
+        border: 2px solid #fff;
         color: #fff;
         text-align: center;
         border-radius: 5px;
@@ -330,7 +352,7 @@ html {
     // border-bottom: 1px solid #586f80;
 
     .hat-select {
-      margin-top: 30px;
+      margin-top: 10px;
       width: auto;
       height: 140px;
       // border-top: 2px solid #000;
