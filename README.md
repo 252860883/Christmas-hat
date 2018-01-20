@@ -2,7 +2,7 @@
 :santa:给你的头像戴一顶圣诞帽吧
 
 ## 给你的头像戴个圣诞帽！
-链接demo：http://www.duhonghui.top/chrimashat/#/(请在手机端或chrome手机模式下查看)
+链接demo：http://www.duhonghui.top/chrimashat/#/  (请在手机端或chrome手机模式下查看)
 
 ### -介绍
 #### 上传图片，选择圣诞帽，支持拖拽移动、放大缩小、旋转
