@@ -1,7 +1,6 @@
 # Christmas-hat
-:santa:给你的头像戴一顶圣诞帽吧
-
-## 给你的头像戴个圣诞帽！
+===
+## :santa:给你的头像戴个圣诞帽！
 链接demo：http://www.duhonghui.top/chrimashat/#/  (请在手机端或chrome手机模式下查看)
 
 ### -介绍
