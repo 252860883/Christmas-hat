@@ -259,6 +259,7 @@ html {
         max-width: 300px;
         min-height: 300px;
         overflow: hidden;
+        clip:rect(0,0,300px,300px);
       }
       .hat-con {
         position: absolute;
